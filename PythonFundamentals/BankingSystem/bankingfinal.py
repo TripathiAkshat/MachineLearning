@@ -1,5 +1,5 @@
 import sqlite3
-
+import bcrypt
 DB = "bank.db"
 
 class DbConnection:
@@ -21,7 +21,9 @@ class DbConnection:
                 VALUES (?, ?, ?);
             """, (10000, 'dummy', 0.0))
             self.conn.commit()
-
+    def fetchdata(self, accno):
+        data = self.conn.execute('SELECT Passwd, Balance FROM bank WHERE Bnkaccno = ?', (accno,)).fetchone()
+        return data
     def withdraw(self, accno, amount):
         self.conn.execute('UPDATE bank SET Balance = Balance - ? WHERE Bnkaccno = ?', (amount, accno))
         self.conn.commit()
@@ -32,54 +34,62 @@ class DbConnection:
 
     def checkbalance(self, accno):
         data = self.conn.execute('SELECT Balance FROM bank WHERE Bnkaccno = ?', (accno,)).fetchone()
-        if data is None:
-            print("Incorrect account number")
-            return
         print(f"The balance of {accno} is {data[0]}")
 
     def addaccount(self, balance, password):
-        self.conn.execute('INSERT INTO bank (Balance, Passwd) VALUES (?, ?)', (balance, password))
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        self.conn.execute('INSERT INTO bank (Balance, Passwd) VALUES (?, ?)', (balance, hashed_password))
         self.conn.commit()
         cursor = self.conn.execute("SELECT * FROM bank ORDER BY Bnkaccno DESC LIMIT 1")
         last_row = cursor.fetchone()
-        print(f"Created bank account with accno {last_row[0]}, password {last_row[1]}, and balance {last_row[2]} \n")
+        print(f"Created bank account with accno {last_row[0]}, password {password}, and balance {last_row[2]} \n")
 
 class Bank(DbConnection):
     def __init__(self):
         super().__init__()
 
     def deposit(self, accno, amount, password):
-        data = self.conn.execute('SELECT Balance FROM bank WHERE Bnkaccno = ? AND Passwd = ?', (accno, password)).fetchone()
+        data = self.fetchdata(accno)
         if data is None:
-            print("Incorrect account number or password")
+            print("Incorrect account number")
             return
-        super().deposit(accno, amount)
-        print(f"Deposited {amount} to Account Number {accno}. Final balance is {data[0] + amount} ")
-        print()
+        if bcrypt.checkpw(password.encode('utf-8'), data[0]):
+            super().deposit(accno, amount)
+            print(f"Deposited {amount} to Account Number {accno}. Final balance is {data[1] + amount} ")
+            print()
+        else:
+            print("Incorrect password")
+            return
 
     def withdraw(self, accno, amount, password):
-        data = self.conn.execute('SELECT Balance FROM bank WHERE Bnkaccno = ? AND Passwd = ?', (accno, password)).fetchone()
+        data = self.fetchdata(accno)
         if data is None:
-            print("Incorrect account number or password")
+            print("Incorrect account number")
             return
-        if data[0] < amount:
-            print("Insufficient balance")
+        if bcrypt.checkpw(password.encode('utf-8'), data[0]):
+            if data[1] < amount:
+                print("Insufficient balance")
+                return
+            super().withdraw(accno, amount)
+            print(f"Withdrawn {amount} from Account Number {accno}. Final balance is {data[1] - amount} ")
+            print()
+        else:
+            print("Incorrect password")
             return
-        super().withdraw(accno, amount)
-        print(f"Withdrawn {amount} from Account Number {accno}. Final balance is {data[0] - amount} ")
-        print()
 
     def checkbalance(self, accno, password):
-        data = self.conn.execute('SELECT Balance FROM bank WHERE Bnkaccno = ? AND Passwd = ?', (accno, password)).fetchone()
+        data = self.fetchdata(accno)
         if data is None:
-            print("Incorrect account number or password")
+            print("Incorrect account number")
             return
-        print(f"The balance of {accno} is {data[0]}")
+        if not bcrypt.checkpw(password.encode('utf-8'), data[0]):
+            print("Incorrect password")
+            return    
+        print(f"The balance of {accno} is {data[1]}")
 
     def addaccount(self, password, balance=0):
         super().addaccount(balance, password)
 
-# Main program
 mybank = Bank()
 while True:
     choice = int(input("Enter your choice:\n1. To create new account\n2. Existing Account \n3. To exit \n"))
@@ -90,25 +100,25 @@ while True:
             mybank.addaccount(password)
         else:
             balance = float(input("Enter your balance: "))
-            mybank.addaccount(password, balance)
+            mybank.addaccount(password,balance)
     elif choice == 2:
         choice1 = int(input("\nEnter your choice: \n1. To deposit \n2. To withdraw \n3. To check balance\n4. To exit\n"))
         if choice1 == 1:
             accno = int(input("\nEnter your accno: "))
             password = input("Enter your password: ")
             amount = float(input("Enter amount to deposit: "))
-            mybank.deposit(accno, amount, password)
+            mybank.deposit(accno, amount,password)
         elif choice1 == 2:
             accno = int(input("\nEnter your accno: "))
             password = input("Enter your password: ")
             amount = float(input("Enter amount to withdraw: "))
-            mybank.withdraw(accno, amount, password)
+            mybank.withdraw(accno, amount,password)
         elif choice1 == 3:
             accno = int(input("\nEnter your accno: "))
             password = input("Enter your password: ")
-            mybank.checkbalance(accno, password)
+            mybank.checkbalance(accno,password)
         elif choice1 == 4:
             exit(0)
-        else:
-            exit(0)
+    else:
+        exit(0)
     
