@@ -2,7 +2,7 @@ import sqlite3
 
 DB = "bank.db"
 
-class db_connection:
+class DbConnection:
     def __init__(self):
         self.conn = sqlite3.connect(DB)
         cursor = self.conn.cursor()
@@ -44,7 +44,7 @@ class db_connection:
         last_row = cursor.fetchone()
         print(f"Created bank account with accno {last_row[0]}, password {last_row[1]}, and balance {last_row[2]} \n")
 
-class Bank(db_connection):
+class Bank(DbConnection):
     def __init__(self):
         super().__init__()
 
