@@ -158,6 +158,8 @@ def withdraw():
         if result == 'Incorrect account number' :
             return render_template('error.html',message=result)
         elif result == 'Incorrect password':
+            return render_template('error.html',message=result)
+        elif result == 'Insufficient balance':
             return render_template('error.html',message=result) 
         return render_template('success.html', message=result)
         
