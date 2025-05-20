@@ -62,7 +62,7 @@ class DbConnection:
         cursor = conn.execute("SELECT * FROM bank ORDER BY Bnkaccno DESC LIMIT 1")
         last_row = cursor.fetchone()
         conn.close()
-        return(f"Created bank account with accno {last_row[0]}, password {password}, and balance {last_row[2]} \n")
+        return(f"Created bank account with accno {last_row[0]}, password {password}, and balance {last_row[2]}, please note your account number and password for further transactions \n")
 
 class Bank(DbConnection):
     def deposit(self, accno, amount, password):
@@ -112,6 +112,10 @@ class Bank(DbConnection):
 
     def addaccount(self, password, balance=0):
         return super().addaccount(balance, password)
+        
+@app.route('/')
+def home():
+    return render_template('home.html') 
 
 @app.route('/chkbalance',methods=['GET','POST'])
 def chkbalance():
@@ -166,7 +170,7 @@ def createaccount():
         password = request.form['mpassword']
         balance = request.form['amount']
         result = bank.addaccount(password, balance)
-        return render_template('success.html', message="Account created successfully!")
+        return render_template('success.html', message=result)
 
 if __name__ == '__main__':
     initialize_db()  

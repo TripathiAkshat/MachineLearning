@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Banking System{% endblock %}
+
+{% block content %}
+<div class="row flex-grow-1 d-flex align-items-center justify-content-center">
+    <div class="col-12 col-lg-8">
+        <div class="card custom-card shadow-lg">
+            <div class="card-body text-bg-success p-5 text-center">
+                <h1 class="display-4 mb-5">Welcome to Our Bank</h1>
+                <div class="d-grid gap-3">
+                    <a href="{{url_for('createaccount')}}" class="btn btn-primary btn-lg">Create New Account</a>
+                    <a href="{{url_for('deposit')}}" class="btn btn-primary btn-lg">Deposit</a>
+                    <a href="{{url_for('withdraw')}}" class="btn btn-primary btn-lg">Withdraw</a>
+                    <a href="{{url_for('chkbalance')}}" class="btn btn-primary btn-lg">Check Balance</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
