@@ -34,7 +34,7 @@ class DbConnection:
 
     def checkbalance(self, accno):
         data = self.conn.execute('SELECT Balance FROM bank WHERE Bnkaccno = ?', (accno,)).fetchone()
-        print(f"The balance of {accno} is {data[0]}")
+        return(f"The balance of {accno} is {data[0]}")
 
     def addaccount(self, balance, password):
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -42,7 +42,7 @@ class DbConnection:
         self.conn.commit()
         cursor = self.conn.execute("SELECT * FROM bank ORDER BY Bnkaccno DESC LIMIT 1")
         last_row = cursor.fetchone()
-        print(f"Created bank account with accno {last_row[0]}, password {password}, and balance {last_row[2]} \n")
+        return(f"Created bank account with accno {last_row[0]}, password {password}, and balance {last_row[2]} \n")
 
 class Bank(DbConnection):
     def __init__(self):
@@ -84,41 +84,43 @@ class Bank(DbConnection):
             return
         if not bcrypt.checkpw(password.encode('utf-8'), data[0]):
             print("Incorrect password")
-            return    
-        print(f"The balance of {accno} is {data[1]}")
+            return
+        return super().checkbalance(accno)
 
     def addaccount(self, password, balance=0):
-        super().addaccount(balance, password)
+        return super().addaccount(balance, password)
+   
 
-mybank = Bank()
-while True:
-    choice = int(input("Enter your choice:\n1. To create new account\n2. Existing Account \n3. To exit \n"))
-    if choice == 1:
-        password = input("Choose your password: ")
-        choice2 = int(input("Enter 0 to make a zero balance account and 1 for creating new account with balance\n"))
-        if choice2 == 0:
-            mybank.addaccount(password)
-        else:
-            balance = float(input("Enter your balance: "))
-            mybank.addaccount(password,balance)
-    elif choice == 2:
-        choice1 = int(input("\nEnter your choice: \n1. To deposit \n2. To withdraw \n3. To check balance\n4. To exit\n"))
-        if choice1 == 1:
-            accno = int(input("\nEnter your accno: "))
-            password = input("Enter your password: ")
-            amount = float(input("Enter amount to deposit: "))
-            mybank.deposit(accno, amount,password)
-        elif choice1 == 2:
-            accno = int(input("\nEnter your accno: "))
-            password = input("Enter your password: ")
-            amount = float(input("Enter amount to withdraw: "))
-            mybank.withdraw(accno, amount,password)
-        elif choice1 == 3:
-            accno = int(input("\nEnter your accno: "))
-            password = input("Enter your password: ")
-            mybank.checkbalance(accno,password)
-        elif choice1 == 4:
-            exit(0)
-    else:
-        exit(0)
+# if "__name__" == "__main__":
+#     mybank = Bank()
+#     while True:
+#         choice = int(input("Enter your choice:\n1. To create new account\n2. Existing Account \n3. To exit \n"))
+#         if choice == 1:
+#             password = input("Choose your password: ")
+#             choice2 = int(input("Enter 0 to make a zero balance account and 1 for creating new account with balance\n"))
+#             if choice2 == 0:
+#                 mybank.addaccount(password)
+#             else:
+#                 balance = float(input("Enter your balance: "))
+#                 mybank.addaccount(password,balance)
+#         elif choice == 2:
+#             choice1 = int(input("\nEnter your choice: \n1. To deposit \n2. To withdraw \n3. To check balance\n4. To exit\n"))
+#             if choice1 == 1:
+#                 accno = int(input("\nEnter your accno: "))
+#                 password = input("Enter your password: ")
+#                 amount = float(input("Enter amount to deposit: "))
+#             mybank.deposit(accno, amount,password)
+#         elif choice1 == 2:
+#             accno = int(input("\nEnter your accno: "))
+#             password = input("Enter your password: ")
+#             amount = float(input("Enter amount to withdraw: "))
+#             mybank.withdraw(accno, amount,password)
+#         elif choice1 == 3:
+#             accno = int(input("\nEnter your accno: "))
+#             password = input("Enter your password: ")
+#             mybank.checkbalance(accno,password)
+#         elif choice1 == 4:
+#             exit(0)
+#     else:
+#         exit(0)
     
