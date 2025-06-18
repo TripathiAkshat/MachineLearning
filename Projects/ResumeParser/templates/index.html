@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Summarizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .upload-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 60px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background-color: #f8f9ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #28a745;
+            background-color: #f0fff4;
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .upload-area h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .upload-area p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .upload-requirements {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .progress-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .results-section h2 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2rem;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid #e9ecef;
+        }
+
+        .card h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .info-item {
+            margin-bottom: 10px;
+            padding: 8px 0;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #495057;
+            display: inline-block;
+            width: 120px;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .skill-tag {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .experience-item {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .experience-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .experience-company {
+            color: #667eea;
+            font-weight: 500;
+            margin: 5px 0;
+        }
+
+        .experience-duration {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .experience-description {
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .achievement-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #28a745;
+        }
+
+        .profile-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .profile-link {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .profile-link:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .upload-section, .results-section {
+                padding: 20px;
+            }
+            
+            .skills-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔍 Resume Summarizer</h1>
+            <p>Upload your PDF resume to extract and organize key information</p>
+        </header>
+
+        <main>
+            <!-- Upload Section -->
+            <section class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📄</div>
+                    <h3>Drag & Drop your resume here</h3>
+                    <p>or click to browse files</p>
+                    <button class="btn" id="browseBtn">Browse Files</button>
+                    <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+                    <p class="upload-requirements">PDF files only • Max 16MB</p>
+                </div>
+                
+                <!-- Progress Section -->
+                <div class="progress-section hidden" id="progressSection">
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" id="progressFill"></div>
+                    </div>
+                    <p class="progress-text" id="progressText">Processing your resume...</p>
+                </div>
+                
+                <!-- Message Section -->
+                <div id="messageSection"></div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section hidden" id="resultsSection">
+                <h2>📋 Extracted Information</h2>
+                
+                <!-- Personal Information -->
+                <div class="card">
+                    <h3>👤 Personal Information</h3>
+                    <div id="personalInfo"></div>
+                </div>
+                
+                <!-- Social Profiles -->
+                <div class="card">
+                    <h3>🔗 Social & Coding Profiles</h3>
+                    <div id="socialProfiles"></div>
+                </div>
+                
+                <!-- Skills -->
+                <div class="card">
+                    <h3>💻 Technical Skills</h3>
+                    <div id="skillsSection"></div>
+                </div>
+                
+                <!-- Experience -->
+                <div class="card">
+                    <h3>💼 Work Experience</h3>
+                    <div id="experienceSection"></div>
+                </div>
+                
+                <!-- Education -->
+                <section id="educationSection" class="results-section" style="display: none;">
+            <!-- Education details will be displayed here -->
+        </section>
+        
+        <!-- Achievements -->
+        <section id="achievementsSection" class="results-section" style="display: none;">
+            <!-- Achievements will be displayed here -->
+        </section>
+        
+        <!-- Hyperlinks -->
+        <section id="hyperlinksSection" class="results-section" style="display: none;">
+            <!-- Hyperlinks will be displayed here -->
+        </section>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        class ResumeSummarizer {
+            constructor() {
+                this.initializeEventListeners();
+            }
+
+            initializeEventListeners() {
+                const uploadArea = document.getElementById('uploadArea');
+                const fileInput = document.getElementById('fileInput');
+                const browseBtn = document.getElementById('browseBtn');
+
+                // Click to browse
+                uploadArea.addEventListener('click', () => fileInput.click());
+                browseBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    fileInput.click();
+                });
+
+                // File input change
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        this.handleFile(e.target.files[0]);
+                    }
+                });
+
+                // Drag and drop
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
+
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.classList.remove('dragover');
+                });
+
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        this.handleFile(files[0]);
+                    }
+                });
+            }
+
+            handleFile(file) {
+                // Validate file
+                if (file.type !== 'application/pdf') {
+                    this.showMessage('Please select a PDF file.', 'error');
+                    return;
+                }
+
+                if (file.size > 16 * 1024 * 1024) {
+                    this.showMessage('File size must be less than 16MB.', 'error');
+                    return;
+                }
+
+                this.uploadFile(file);
+            }
+
+            async uploadFile(file) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                // Show progress
+                this.showProgress();
+
+                try {
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        this.displayResults(result.data);
+                        this.showMessage('Resume processed successfully!', 'success');
+                    } else {
+                        this.showMessage(result.error || 'An error occurred.', 'error');
+                    }
+                } catch (error) {
+                    this.showMessage('Network error. Please try again.', 'error');
+                } finally {
+                    this.hideProgress();
+                }
+            }
+
+            showProgress() {
+                document.getElementById('progressSection').classList.remove('hidden');
+                const progressFill = document.getElementById('progressFill');
+                
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    if (progress > 90) progress = 90;
+                    progressFill.style.width = progress + '%';
+                }, 200);
+
+                // Store interval for cleanup
+                this.progressInterval = interval;
+            }
+
+            hideProgress() {
+                if (this.progressInterval) {
+                    clearInterval(this.progressInterval);
+                }
+                document.getElementById('progressFill').style.width = '100%';
+                setTimeout(() => {
+                    document.getElementById('progressSection').classList.add('hidden');
+                    document.getElementById('progressFill').style.width = '0%';
+                }, 500);
+            }
+
+            showMessage(message, type) {
+                const messageSection = document.getElementById('messageSection');
+                const className = type === 'error' ? 'error-message' : 'success-message';
+                messageSection.innerHTML = `<div class="${className}">${message}</div>`;
+                
+                setTimeout(() => {
+                    messageSection.innerHTML = '';
+                }, 5000);
+            }
+
+            displayResults(data) {
+                // Personal Information
+                this.displayPersonalInfo(data.personal_info);
+                
+                // Social Profiles
+                this.displaySocialProfiles(data.profiles);
+                
+                // Education
+                this.displayEducation(data.education);
+                
+                // Skills
+                this.displaySkills(data.skills);
+                
+                // Experience
+                this.displayExperience(data.experience);
+                
+                // Achievements
+                this.displayAchievements(data.achievements);
+                
+                // Hyperlinks
+                this.displayHyperlinks(data.hyperlinks);
+                
+                // Show results section
+                document.getElementById('resultsSection').classList.remove('hidden');
+                document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+            }
+
+            displayPersonalInfo(personalInfo) {
+                const container = document.getElementById('personalInfo');
+                container.innerHTML = '';
+
+                if (personalInfo.name) {
+                    container.innerHTML += `
+                        <div class="info-item">
+                            <span class="info-label">Name:</span>
+                            <span class="info-value">${personalInfo.name}</span>
+                        </div>
+                    `;
+                }
+
+                if (personalInfo.email) {
+                    container.innerHTML += `
+                        <div class="info-item">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value">${personalInfo.email}</span>
+                        </div>
+                    `;
+                }
+
+                if (personalInfo.phone) {
+                    container.innerHTML += `
+                        <div class="info-item">
+                            <span class="info-label">Phone:</span>
+                            <span class="info-value">${personalInfo.phone}</span>
+                        </div>
+                    `;
+                }
+
+                if (!personalInfo.name && !personalInfo.email && !personalInfo.phone) {
+                    container.innerHTML = '<p>No personal information extracted.</p>';
+                }
+            }
+
+            displaySocialProfiles(profiles) {
+                const container = document.getElementById('socialProfiles');
+                container.innerHTML = '';
+
+                if (Object.keys(profiles).length === 0) {
+                    container.innerHTML = '<p>No social profiles found.</p>';
+                    return;
+                }
+
+                const profilesHTML = Object.entries(profiles).map(([platform, url]) => {
+                    const platformName = platform.charAt(0).toUpperCase() + platform.slice(1);
+                    return `
+                        <a href="${url}" target="_blank" class="profile-link">
+                            <strong>${platformName}</strong><br>
+                            <small>${url}</small>
+                        </a>
+                    `;
+                }).join('');
+
+                container.innerHTML = `<div class="profile-links">${profilesHTML}</div>`;
+            }
+
+            displaySkills(skills) {
+                const container = document.getElementById('skillsSection');
+                
+                if (!skills || skills.length === 0) {
+                    container.innerHTML = '<p>No skills extracted.</p>';
+                    return;
+                }
+
+                const skillsHTML = skills.map(skill => 
+                    `<div class="skill-tag">${skill}</div>`
+                ).join('');
+
+                container.innerHTML = `<div class="skills-grid">${skillsHTML}</div>`;
+            }
+
+            displayExperience(experiences) {
+                const container = document.getElementById('experienceSection');
+                
+                if (!experiences || experiences.length === 0) {
+                    container.innerHTML = '<p>No work experience found.</p>';
+                    return;
+                }
+
+                const experienceHTML = experiences.map(exp => `
+                    <div class="experience-item">
+                        <div class="experience-title">${exp.title || 'Position Title'}</div>
+                        <div class="experience-company">${exp.company || 'Company Name'}</div>
+                        <div class="experience-duration">${exp.duration || 'Duration not specified'}</div>
+                        <div class="experience-description">${exp.description || 'No description available'}</div>
+                    </div>
+                `).join('');
+
+                container.innerHTML = experienceHTML;
+            }
+
+            displayAchievements(achievements) {
+                const achievementsSection = document.getElementById('achievementsSection');
+                if (!achievements || achievements.length === 0) {
+                    achievementsSection.style.display = 'none';
+                    return;
+                }
+
+                let html = '<h2>🏆 Achievements</h2><ul class="achievement-list">';
+                achievements.forEach(achievement => {
+                    html += `<li>${achievement}</li>`;
+                });
+                html += '</ul>';
+
+                achievementsSection.innerHTML = html;
+                achievementsSection.style.display = 'block';
+            }
+            
+            displayEducation(education) {
+                const educationSection = document.getElementById('educationSection');
+                if (!education || (!education.degrees?.length && !education.college && !education.cgpa)) {
+                    educationSection.style.display = 'none';
+                    return;
+                }
+
+                let html = '<h2>🎓 Education</h2><div class="education-details">';
+                
+                if (education.degrees?.length > 0) {
+                    html += '<div class="education-item"><strong>Degrees:</strong> ' + 
+                            education.degrees.join(', ') + '</div>';
+                }
+                
+                if (education.college) {
+                    html += `<div class="education-item"><strong>Institution:</strong> ${education.college}</div>`;
+                }
+                
+                if (education.cgpa) {
+                    html += `<div class="education-item"><strong>CGPA/GPA:</strong> ${education.cgpa}</div>`;
+                }
+                
+                html += '</div>';
+                educationSection.innerHTML = html;
+                educationSection.style.display = 'block';
+            }
+            
+            displayHyperlinks(hyperlinks) {
+                const hyperlinksSection = document.getElementById('hyperlinksSection');
+                if (!hyperlinks || Object.keys(hyperlinks).length === 0) {
+                    hyperlinksSection.style.display = 'none';
+                    return;
+                }
+
+                let html = '<h2>🔗 Online Profiles</h2><div class="hyperlinks-container">';
+                
+                for (const [platform, data] of Object.entries(hyperlinks)) {
+                    const displayName = platform.charAt(0).toUpperCase() + platform.slice(1);
+                    html += `
+                        <div class="profile-link">
+                            <span class="platform">${displayName}:</span>
+                            <a href="${data.url}" target="_blank" class="profile-url">
+                                ${data.text || data.url}
+                            </a>
+                        </div>`;
+                }
+                
+                html += '</div>';
+                hyperlinksSection.innerHTML = html;
+                hyperlinksSection.style.display = 'block';
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            new ResumeSummarizer();
+        });
+    </script>
+</body>
+</html>
